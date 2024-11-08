@@ -1,4 +1,5 @@
 <?php
+session_start();
   require "../db/connection.php";
   $conn = connect();
   if(isset($_POST['login'])){
@@ -8,14 +9,15 @@
       $query = "SELECT * FROM users WHERE email= '".$email."' AND password = '".$pass."'";
       if($result =  $conn->query($query)){
         if($row = $result->fetch_assoc()){
-          
-          if($row['role'] = 1){
+          $_SESSION['email'] = $email;
+          $_SESSION['pass'] = $pass;
+          if($row['role'] == 1){
             echo "welcome user" .$email;
             header("Location: ../index.php");
           }
-          else if($row['role'] = 0){
+          else if($row['role'] == 0){
             echo "welcome admin " .$email;
-            header("Loaction: ../panel/dashboard.php");
+            header("Location: ../panel/dashboard.php");
           }
           else{
             echo "undefined role";

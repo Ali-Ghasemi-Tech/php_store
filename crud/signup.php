@@ -38,7 +38,7 @@
     }
   }
   else if(isset($_POST['login'])){
-    heder("Location: ./login.php");
+    header("Location: ./login.php");
   }
 ?>
 <!DOCTYPE html>
