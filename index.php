@@ -1,5 +1,7 @@
 <?php
 session_start();
+require "./db/connection.php";
+require "./modules/addProduct.php";
 ?>
 
 
@@ -16,7 +18,7 @@ session_start();
 </head>
 <body>
     <?php
-    require "./db/connection.php";
+   
     $conn = connect();
     ?>
     <header>
@@ -40,7 +42,18 @@ session_start();
                 
             </a>
             <a href="./crud/login.php" id="login-link">
-                <img src="./assets/img/user-regular-24.png" alt="">
+                <?php
+                    
+                    if(!empty($_SESSION['email'])){
+                        $atIndex = strpos($_SESSION['email'] , '@');
+                        $user_name = substr($_SESSION['email'] , 0 , $atIndex);
+                        echo "<span>". $user_name."</span>";
+                    }
+                    else{
+                        echo "<img src='./assets/img/user-regular-24.png'>";
+                    }
+                ?>
+                
             </a>
         </div>
     </header>
@@ -100,13 +113,18 @@ session_start();
             }else{
                 $query = "SELECT * , title as product_title , image as product_image FROM products";
             }
+            
             $result = $conn->query($query);
             $lines = $result->num_rows;
+            $temp_idx = $lines
+          
             if($result && $lines > 0){
                 while($lines >0){
                 $row = $result->fetch_assoc();
                 $title = $row['product_title'];
                 $str = $row['product_image'];
+                
+
                 if($str){
                     $image = substr($str, 1);
                 }   
@@ -115,19 +133,32 @@ session_start();
                 }
                 $price = $row['price'];
                 $desc = $row['description'];
-                echo "<a> 
-                        <div class='product_image_container'>
-                            <img src='$image' >
-                        </div>
-                        <div class='product_text_container'>
-                            <h3 class='product_name'>$title</h3>
-                            <span class='product_price'>$price تومان</span>
-                        </div> 
+                echo "<a>
+                        <form action='./index.php' method='post'> 
+                            <div class='product_image_container'>
+                                <img src='$image' >
+                            </div>
+                            <div class='product_text_container'>
+                                <h3 class='product_name'>$title</h3>
+                                <span class='product_price'>$price تومان</span>
+                            </div>
+                            <input name='".$lines."' type='submit' value='add to cart' >
+                        </form>
                     </a>";
 
                 $lines --;
                 }
                 }
+                while ($temp_idx > 0){
+                    if(isset($_POST["submit_product"])){
+                        $addSql = $query . "WHERE product_id = ";
+                        $resultAdd = $conn->query($addSql);
+        
+                        $adder = $resultAdd->fetch_assoc();
+                        addProduct($_SESSION['user_id'] , $adder['product_id'] , $conn);
+                    }
+                }
+                
             ?>
 
             

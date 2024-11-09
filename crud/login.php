@@ -11,6 +11,7 @@ session_start();
         if($row = $result->fetch_assoc()){
           $_SESSION['email'] = $email;
           $_SESSION['pass'] = $pass;
+          $_SESSION['user_id'] = $row['user_id'];
           if($row['role'] == 1){
             echo "welcome user" .$email;
             header("Location: ../index.php");
