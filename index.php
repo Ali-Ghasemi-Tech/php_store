@@ -1,7 +1,7 @@
 <?php
 session_start();
 require "./db/connection.php";
-require "./modules/addProduct.php";
+require "./modules/addToCart.php";
 ?>
 
 
@@ -31,7 +31,7 @@ require "./modules/addProduct.php";
         </div>
         
         <div class="header-left">
-            <a href="" id="cart-link">
+            <a href="./cart.php" id="cart-link">
                 <div class="cart-span">
                     <span>تومان 0</span>
                     <span>0 محصول</span>
@@ -116,13 +116,14 @@ require "./modules/addProduct.php";
             
             $result = $conn->query($query);
             $lines = $result->num_rows;
-            $temp_idx = $lines
+            $temp_idx = $lines;
           
             if($result && $lines > 0){
                 while($lines >0){
                 $row = $result->fetch_assoc();
                 $title = $row['product_title'];
                 $str = $row['product_image'];
+                $product_id = $row['product_id'];
                 
 
                 if($str){
@@ -134,34 +135,68 @@ require "./modules/addProduct.php";
                 $price = $row['price'];
                 $desc = $row['description'];
                 echo "<a>
-                        <form action='./index.php' method='post'> 
+                        <form id = 'product_form_".$product_id."' action='./index.php' method='post'>
+                            <input type='hidden' name = 'product_id' value ='$product_id'>
+                            <input type= 'hidden' name = 'title' value = '".$title."'>
                             <div class='product_image_container'>
                                 <img src='$image' >
                             </div>
                             <div class='product_text_container'>
-                                <h3 class='product_name'>$title</h3>
+                                <h3 class='product_name' name='title'>$title</h3>
                                 <span class='product_price'>$price تومان</span>
                             </div>
-                            <input name='".$lines."' type='submit' value='add to cart' >
+                            <button type='button' onClick={submitForm(".$product_id.")}>Add to cart</button>
                         </form>
                     </a>";
 
                 $lines --;
                 }
                 }
-                while ($temp_idx > 0){
-                    if(isset($_POST["submit_product"])){
-                        $addSql = $query . "WHERE product_id = ";
-                        $resultAdd = $conn->query($addSql);
-        
-                        $adder = $resultAdd->fetch_assoc();
-                        addProduct($_SESSION['user_id'] , $adder['product_id'] , $conn);
-                    }
-                }
                 
+                
+                    if(isset($_POST['product_id'])){
+                        echo "submit done";
+                        $product_title = $_POST['title'];
+                        $this_product_id = $_POST['product_id'];
+                        if(empty($_SESSION['email'])){
+                            header("Location: ../crud/login.php");
+                        }
+                        else{
+                            $user_id = $_SESSION['user_id'];
+                            $check_cart = "SELECT * FROM carts WHERE user_id = $user_id";
+                            if($isCart = $conn->query($check_cart)){
+                                if(!$row = $isCart->fetch_assoc()){
+                                    $add_row = "INSERT INTO carts(user_id) VALUE($user_id)";
+                                    $conn->query($add_row);
+                                }
+                                else{
+                                    $get_cart_id = "SELECT cart_id FROM carts WHERE user_id = $user_id";
+                                    $result = $conn->query($get_cart_id);
+                                    $row = $result->fetch_assoc();
+                                    $cart_id = $row['cart_id'];
+    
+                                    $check_product = "SELECT *  FROM user_cart
+                                    WHERE user_cart.product_id = $this_product_id";
+                                    $result = $conn->query($check_product);
+                                    echo $result->num_rows;
+                                    if($result->num_rows > 0){
+                                        $add_quantity = "UPDATE user_cart SET quantity = quantity+1 WHERE product_id = $this_product_id";
+                                        $result = $conn->query($add_quantity);
+                                        echo "updated the existing product";
+                                    }else{
+                                        $add_product = "INSERT INTO user_cart(cart_id , product_id, quantity) VALUES($cart_id , $this_product_id , 1)";
+                                        $result = $conn->query($add_product);
+                                        echo "product has been added to your cart";
+                                    }
+                                   
+                                }
+                            }
+
+                        }
+                    }  
+ 
             ?>
 
-            
             
             
             </div>
@@ -206,8 +241,9 @@ require "./modules/addProduct.php";
     slider.addEventListener('mouseup', stopDragging, false);
     slider.addEventListener('mouseleave', stopDragging, false);
   
-    function submitForm(form) {
-        form.submit();
-    }
+    function submitForm(productId) {
+    document.getElementById('product_form_' + productId).submit();
+}
 </script>
 </html>
+

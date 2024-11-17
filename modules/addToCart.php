@@ -6,8 +6,8 @@ function addProduct($user_id , $product_id , $conn){
     if($row = $result->fetch_assoc()){
       if($row['quantity'] != 0){
       $quantity = $row['quantity'];
-      $quantity += 1
-      $query = "ALTER ROW UPDATE quantity". $quantity
+      $quantity += 1;
+      $query = "ALTER ROW UPDATE quantity". $quantity;
       }
       else{ 
          $query = "INSERT INTO user_cart(cart_id , product_id) VALUE($user_id , $product_id)";
