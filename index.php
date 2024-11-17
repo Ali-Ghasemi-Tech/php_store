@@ -20,6 +20,22 @@ require "./modules/addToCart.php";
     <?php
    
     $conn = connect();
+        $query = "SELECT * , products.product_id FROM user_cart 
+        JOIN products ON products.product_id = user_cart.product_id
+        ";
+        if($result = $conn->query($query)){
+            $lines = $result->num_rows;
+            $total = 0;
+            $products = 0;
+            while($lines > 0){
+            $row = $result->fetch_assoc();
+            $price = $row['price'];
+            $quantity = $row['quantity'];
+            $total += ($quantity * $price);
+            $products += ($quantity);
+            $lines --;
+            }
+        }
     ?>
     <header>
         <div class="header-right">
@@ -33,8 +49,8 @@ require "./modules/addToCart.php";
         <div class="header-left">
             <a href="./cart.php" id="cart-link">
                 <div class="cart-span">
-                    <span>تومان 0</span>
-                    <span>0 محصول</span>
+                    <span>تومان <?php echo "$total";?></span>
+                    <span><?php echo "$products";?> محصول</span>
                 </div>
                 <div class="cart-container">
                     <img src="./assets/img/cart-regular-24 (1).png" alt="">

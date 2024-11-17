@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,24 +16,25 @@
   <!-- Template Main CSS File -->
   <link href="./assets/style.css" rel="stylesheet">
 </head>
-<body>
-<main id="main" class="main">
-<div class="col-12">
-  <div class="card recent-sales overflow-auto">
-    <div class="card-body">
-      <h5 class="card-title">Cart</h5>
 
-      <table class="table table-borderless datatable">
-        <thead>
-          <tr>
-            <th scope="col">title</th>
-            <th scope="col">Price</th>
-            <th scope="col">quantity</th>
-            <th scope="col">image</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
+<body>
+  <main id="main" class="main">
+    <div class="col-12">
+      <div class="card recent-sales overflow-auto">
+        <div class="card-body">
+          <h5 class="card-title">Cart</h5>
+
+          <table class="table table-borderless datatable">
+            <thead>
+              <tr>
+                <th scope="col">title</th>
+                <th scope="col">Price</th>
+                <th scope="col">quantity</th>
+                <th scope="col">image</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
             require "./db/connection.php";
             $conn = connect();
             $query = "SELECT * , products.product_id FROM user_cart 
@@ -47,6 +49,7 @@
                 $title = $row['title'];
                 $price = $row['price'];
                 $quantity = $row['quantity'];
+                $id = $row['product_id'];
                 $total += ($quantity * $price);
                 if($str){
                   $image = substr($str, 1);
@@ -59,6 +62,15 @@
                           <td> ".$title. "</td>
                           <td> " .$price . "</td>
                           <td> " .$quantity . "</td>
+                          <td> 
+                            <form action='./db/deleteFromCart.php' method='post'>
+                              <input type='hidden' name='id' value='$id'/>
+                              <input type='submit' value ='+' name ='add' class='btn btn-primary'/>
+                              <input type='submit' value ='-' name ='remove' class='btn btn-primary'/>
+                            </form>
+                           
+                          <td>
+
                           </td>
                           <td><image style='width: auto; height: 50px;' class='image' src='$image'></td>
                       </tr>";
@@ -68,20 +80,18 @@
             }
           ?>
 
-        </tbody>
-      </table>
-      <div><span>total:</span><?php echo "$total"?></div>
-      <button class="btn btn-primary">purchase</button>
+            </tbody>
+          </table>
+          <div><span>total:</span><?php echo "$total"?></div>
+          <button class="btn btn-primary">purchase</button>
+        </div>
+
+      </div>
+
+
     </div>
-
-  </div>
-
- 
-</div>
-</div><!-- End Recent Sales -->
-          </main>
+    </div><!-- End Recent Sales -->
+  </main>
 </body>
+
 </html>
-
-
-
