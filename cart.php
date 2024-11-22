@@ -18,6 +18,13 @@
 </head>
 
 <body>
+  <header id="header" class="header fixed-top d-flex align-items-center">
+  <div class="d-flex align-items-center justify-content-between">
+      <a href="./index.php" class="logo d-flex align-items-center">
+        <span class="d-none d-lg-block">Mobocom</span>
+      </a>
+    </div><!-- End Logo -->
+  </header>
   <main id="main" class="main">
     <div class="col-12">
       <div class="card recent-sales overflow-auto">
@@ -31,6 +38,7 @@
                 <th scope="col">Price</th>
                 <th scope="col">quantity</th>
                 <th scope="col">image</th>
+                <th scope="col">actions</th>
               </tr>
             </thead>
             <tbody>
@@ -62,17 +70,17 @@
                           <td> ".$title. "</td>
                           <td> " .$price . "</td>
                           <td> " .$quantity . "</td>
+                          
+
+                          </td>
+                          <td><image style='width: auto; height: 50px;' class='image' src='$image'></td>
                           <td> 
                             <form action='./db/deleteFromCart.php' method='post'>
                               <input type='hidden' name='id' value='$id'/>
                               <input type='submit' value ='+' name ='add' class='btn btn-primary'/>
                               <input type='submit' value ='-' name ='remove' class='btn btn-primary'/>
                             </form>
-                           
-                          <td>
-
-                          </td>
-                          <td><image style='width: auto; height: 50px;' class='image' src='$image'></td>
+                          <td>  
                       </tr>";
 
                 $lines --;

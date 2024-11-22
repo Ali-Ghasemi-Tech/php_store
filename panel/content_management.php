@@ -287,11 +287,11 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Products</h1>
+      <h1>Files</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item active">Products</li>
+          <li class="breadcrumb-item active">Files</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -305,42 +305,26 @@
             <!-- Customers Card -->
             <div class="col-xxl-4 col-xl-12">
               <div class="card info-card customers-card">
-                <!-- NEW PRODUCT -->
+                <!-- NEW File -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#basicModal">
-                  New product
+                  New File
                 </button>
                 <div class="modal fade" id="basicModal" tabindex="-1">
                   <div class="modal-dialog">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title">New product</h5>
+                        <h5 class="modal-title">New File</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                      
                       <div class="modal-body">
-                        <form enctype="multipart/form-data" id="addProduct" action="../db/addProduct.php" method="post" name='addProduct'  enctype="multipart/form-data">
-                          title: <input type="text" name='title'><br>
-                          description: <input type="text" name='description'><br>
-                          price: <input type="number" name="price"><br>
-                          category: <select name="category_id" id="categories">
-                          <?php
-                            
-                            $query= "SELECT category_id , title FROM categories";
-                            $result = $conn->query($query);
-                            if($result && $result->num_rows > 0){
-                              while($row = $result->fetch_assoc()){
-                                echo "<option value='{$row['category_id']}'>{$row['title']}</option>";
-                              }
-                            }
-                            ?>
-                            </select>
-                            <input type="file" name="img">
+                        <form enctype="multipart/form-data" id="addFile" action="../db/content/addContent.php" method="post" name='addFile'  enctype="multipart/form-data">
+                            <input type="file" name="file">
                         </form>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" name="submit" class="btn btn-primary" form='addProduct'>Save
-                          changes</button>
+                        <input type="button" class="btn btn-secondary" data-bs-dismiss="modal" value= 'close'>
+                        <input type="submit" name="submit" class="btn btn-primary" form='addFile' value = 'save changes'/>
                       </div>
                     </div>
                   </div>
@@ -358,68 +342,46 @@
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title">products</h5>
+                  <h5 class="card-title">Images</h5>
 
                   <table class="table table-borderless datatable">
                     <thead>
                       <tr>
-                        <th scope="col">product_id</th>
-                        <th scope="col">title</th>
-                        <th scope="col">description</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">category</th>
-                        <th scope="col">image</th>
+                        <th scope="col">file</th>
+                        <th scope="col">format</th>
+                        <th scope="col">size</th>
                         <th scope="col">actions</th>
                       </tr>
                     </thead>
                     <tbody>
 
                       <?php
-                      $search_result = null;
-
-                      $query = "SELECT  products.image as product_image ,product_id, products.title as product_title , price , description , categories.title as category_title, products.category_id as category_id FROM products 
-                       JOIN categories ON categories.category_id = products.category_id 
-                       ";
-
-                      if(isset($_POST['search_submit'])){
-                       $search = $_POST['search'];
-
-                       $query = $query . "WHERE products.title LIKE '%".$search ."%' OR categories.title LIKE '%".$search ."%'";
-
-                       $result = $conn->query($query);
-                       $search_result = search($conn , $query);
-                      }
-                      if($search_result){
-                        $result = $search_result;
-                      }else{
+                      $query = "SELECT * FROM content WHERE format = 'jpeg' or format = 'webp'";
                       $result = $conn->query($query);
-                      }
-            if($result->num_rows > 0){
-              while($row = $result->fetch_assoc()){
-                $id = $row['product_id'];
-                $title = htmlspecialchars($row['product_title'], ENT_QUOTES, 'UTF-8'); 
-                $desc = htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8'); 
-                $price = $row['price'];
-                $category_id = $row['category_id'];
-                $category_title = $row['category_title'];
-                $image = $row['product_image'];
-                
-                echo "<tr>
-                <td>".$id. "</td>
-                <td> ".$title. "</td>
-                <td> ".$desc. "</td>
-                <td> " .$price . "</td>
-                <td> " .$category_title . "</td>
-                </td>
-                <td><image style='width: auto; height: 50px;' class='image' src='$image'></td>
-                <td>
-                  <button type='button' class='btn btn-primary' onclick='openEditModal($id, \"$title\" , \"$desc\" , $price , $category_id )'>Edit</button>
-                <a href='../db/deleteProduct.php?id=".$id."'>Delete</a>
-                </td>
-                </tr>";
-            }
-                      }
-          ?>
+
+                      while($row = $result->fetch_assoc()){
+                      $name = $row['name'];
+                      $format = $row['format'];
+                      $size = $row['size'];
+                      $path = $row['path'];
+                      $id = $row['content_id'];
+
+                      $lines = $result->num_rows;
+                      
+                      echo "<tr>
+                            <td><image src = '../$path' style = 'width:5vw'></td>
+                            <td> ".$format. "</td>
+                            </td>
+                            <td> ".$size / 1000 . " kb</td>
+                            <td>
+                            <a href='../".$path."'>Download</a>
+                            <a href='../db/content/deleteContent.php?id=$id'>Delete</a>
+                            </td>
+                            </tr>";
+                            $lines --;
+                      
+                    }
+                      ?>
                     </tbody>
                   </table>
 
@@ -463,6 +425,292 @@
                 </div>
 
               </div>
+
+              <!-- Recent Sales -->
+            <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+
+                <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                </div>
+
+                <div class="card-body">
+                  <h5 class="card-title">Videos</h5>
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">file</th>
+                        <th scope="col">format</th>
+                        <th scope="col">size</th>
+                        <th scope="col">actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+                      <?php
+                      $query = "SELECT * FROM content WHERE format= 'mp4'";
+                      $result = $conn->query($query);
+
+                      while($row = $result->fetch_assoc()){
+                      $name = $row['name'];
+                      $format = $row['format'];
+                      $size = $row['size'];
+                      $path = $row['path'];
+                      $id = $row['content_id'];
+
+                      $lines = $result->num_rows;
+                      
+                      echo "<tr>
+                            <td><video width='320' height='240' controls>
+                                  <source src='../$path' type='video/mp4'>
+                                  Your browser does not support the video tag.
+                                </video></td>
+                            <td> ".$format. "</td>
+                            </td>
+                            <td> ".$size / 1000 . " kb</td>
+                            <td>
+                            <a href='../".$path."'>Download</a>
+                            <a href='../db/content/deleteContent.php?id=$id'>Delete</a>
+                            </td>
+                            </tr>";
+                            $lines --;
+                      
+                    }
+                      ?>
+                    </tbody>
+                  </table>
+
+                </div>
+
+                <!-- EDIT MODAL -->
+                <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form enctype="multipart/form-data" id="editForm" action="../db/updateProduct.php?id=<?php echo $id; ?>" method="post">
+                          <input type="hidden" name="product_id" id="product_id">
+                          <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            title: <input type="text" class="form-control" id="title" name="title" required>
+                            description: <input type="text" class="form-control" id="description" name="description" required>
+                            price: <input type="number" class="form-control" id="price" name="price" required>
+                            category_id: <select name="category_id" id="category_id" require>
+                            <?php
+                            $query= "SELECT category_id , title FROM categories";
+                            $result = $conn->query($query);
+                            if($result && $result->num_rows > 0){
+                              while($row = $result->fetch_assoc()){
+                                echo "<option value='{$row['category_id']}'>{$row['title']}</option>";
+                              }
+                            }
+                            ?>
+                            </select>
+                            image: <input type="file" name="img">
+                          </div>
+                          <button type="submit" name="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Recent Sales -->
+            <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+
+                <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                </div>
+
+                <div class="card-body">
+                  <h5 class="card-title">pdf</h5>
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">file</th>
+                        <th scope="col">format</th>
+                        <th scope="col">size</th>
+                        <th scope="col">actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+                      <?php
+                      $query = "SELECT * FROM content WHERE format = 'pdf'";
+                      $result = $conn->query($query);
+
+                      while($row = $result->fetch_assoc()){
+                      $name = $row['name'];
+                      $format = $row['format'];
+                      $size = $row['size'];
+                      $path = $row['path'];
+                      $id = $row['content_id'];
+
+                      $lines = $result->num_rows;
+                      
+                      echo "<tr>
+                            <td><a href= '../$path'>$name.pdf</a></td>
+                            <td> ".$format. "</td>
+                            </td>
+                            <td> ".$size / 1000 . " kb</td>
+                            <td>
+                            <a href='../".$path."'>Download</a>
+                            <a href='../db/content/deleteContent.php?id=$id'>Delete</a>
+                            </td>
+                            </tr>";
+                            $lines --;
+                      
+                    }
+                      ?>
+                    </tbody>
+                  </table>
+
+                </div>
+
+                <!-- EDIT MODAL -->
+                <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form enctype="multipart/form-data" id="editForm" action="../db/updateProduct.php?id=<?php echo $id; ?>" method="post">
+                          <input type="hidden" name="product_id" id="product_id">
+                          <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            title: <input type="text" class="form-control" id="title" name="title" required>
+                            description: <input type="text" class="form-control" id="description" name="description" required>
+                            price: <input type="number" class="form-control" id="price" name="price" required>
+                            category_id: <select name="category_id" id="category_id" require>
+                            <?php
+                            $query= "SELECT category_id , title FROM categories";
+                            $result = $conn->query($query);
+                            if($result && $result->num_rows > 0){
+                              while($row = $result->fetch_assoc()){
+                                echo "<option value='{$row['category_id']}'>{$row['title']}</option>";
+                              }
+                            }
+                            ?>
+                            </select>
+                            image: <input type="file" name="img">
+                          </div>
+                          <button type="submit" name="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+
+              <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+
+                <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                </div>
+
+                <div class="card-body">
+                  <h5 class="card-title">Audio</h5>
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">file</th>
+                        <th scope="col">format</th>
+                        <th scope="col">size</th>
+                        <th scope="col">actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+                      <?php
+                      $query = "SELECT * FROM content WHERE format= 'mp3'";
+                      $result = $conn->query($query);
+
+                      while($row = $result->fetch_assoc()){
+                      $name = $row['name'];
+                      $format = $row['format'];
+                      $size = $row['size'];
+                      $path = $row['path'];
+                      $id = $row['content_id'];
+
+                      $lines = $result->num_rows;
+                      
+                      echo "<tr>
+                            <td><audio controls>
+                                  <source src='../$path' type='audio/mp3'>
+                                Your browser does not support the audio element.
+                                </audio></td>
+                            <td> ".$format. "</td>
+                            </td>
+                            <td> ".$size / 1000 . " kb</td>
+                            <td>
+                            <a href='../".$path."'>Download</a>
+                            <a href='../db/content/deleteContent.php?id=$id'>Delete</a>
+                            </td>
+                            </tr>";
+                            $lines --;
+                      
+                    }
+                      ?>
+                    </tbody>
+                  </table>
+
+                </div>
+
+                <!-- EDIT MODAL -->
+                <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form enctype="multipart/form-data" id="editForm" action="../db/updateProduct.php?id=<?php echo $id; ?>" method="post">
+                          <input type="hidden" name="product_id" id="product_id">
+                          <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            title: <input type="text" class="form-control" id="title" name="title" required>
+                            description: <input type="text" class="form-control" id="description" name="description" required>
+                            price: <input type="number" class="form-control" id="price" name="price" required>
+                            category_id: <select name="category_id" id="category_id" require>
+                            <?php
+                            $query= "SELECT category_id , title FROM categories";
+                            $result = $conn->query($query);
+                            if($result && $result->num_rows > 0){
+                              while($row = $result->fetch_assoc()){
+                                echo "<option value='{$row['category_id']}'>{$row['title']}</option>";
+                              }
+                            }
+                            ?>
+                            </select>
+                            image: <input type="file" name="img">
+                          </div>
+                          <button type="submit" name="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            
 
               <div class="col-12">
                 <div class="card top-selling overflow-auto">

@@ -267,6 +267,10 @@
           <i class="bi bi-menu-button-wide"></i><span>products</span><i class="bi"></i>
         </a>
 
+        <a class="nav-link" data-bs-target="#components-nav" href="content_management.php">
+          <i class="bi bi-menu-button-wide"></i><span>Content Management</span><i class="bi"></i>
+        </a>
+
       </li><!-- End Icons Nav -->
 
     </ul>
