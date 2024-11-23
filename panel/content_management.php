@@ -660,7 +660,7 @@
                             <td> ".$size / 1000 . " kb</td>
                             <td>
                             <a href='../".$path."'>Download</a>
-                            <a href='../db/content/deleteContent.php?id=$id'>Delete</a>
+                            <a href='../db/content/deleteContent.php?id=$id?'>Delete</a>
                             </td>
                             </tr>";
                             $lines --;

@@ -24,7 +24,6 @@ function save_file($format){
   $target_file = $target_dir . basename($_FILES["file"]["name"]);
   $uploadOk = 1;
   $tmp = $_FILES['file']['tmp_name'];
-  
     
   // Check if file already exists
   if (file_exists($target_file)) {
